@@ -7,7 +7,6 @@ from sklearn.metrics.pairwise import cosine_similarity
 import random
 
 
-
 combined_features=pd.read_csv("cleaned_dataset.csv")
 recom_data=pd.read_csv("recom_dataset.csv")
 
