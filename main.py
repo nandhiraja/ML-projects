@@ -8,8 +8,8 @@ import random
 
 
 
-combined_features=pd.read_csv("/kaggle/input/required-data/cleaned_dataset.csv")
-recom_data=pd.read_csv("/kaggle/input/required-data/recom_dataset.csv")
+combined_features=pd.read_csv("/cleaned_dataset.csv")
+recom_data=pd.read_csv("/recom_dataset.csv")
 
 combined_features=combined_features["0"]
 
