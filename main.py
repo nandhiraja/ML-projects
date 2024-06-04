@@ -38,6 +38,7 @@ def recommendation(similarity,recom_data):
         # make the recommendation based on your movie which you like 
     # get input of the movie_name
     st.write(random_names)
+    movie_name = "Iron man"
     movie_name = st.text_input('Enter the movie name')
     #movie_name =input('Enter your favourite movie name : ')
 
@@ -49,8 +50,10 @@ def recommendation(similarity,recom_data):
     list_of_all_titles = recom_data['names'].tolist()       # get all movie name as list
 
     find_close_match = difflib.get_close_matches(movie_name, list_of_all_titles)  # find closest match --list of movie-- form oru given movie
-    print(" similiar names  :  ",  find_close_match ,"\n\n")
-
+    
+    #print(" similiar names  :  ",  find_close_match ,"\n\n")
+    st.write(find_close_match)
+    
     close_match = find_close_match[0]             # we take first one which is given by cloest movie
 
     index_of_the_movie = recom_data[recom_data.names == close_match]['index'].values[0]   #  geting the index of the movie
@@ -59,22 +62,22 @@ def recommendation(similarity,recom_data):
         
     sorted_similar_movies = sorted(similarity_score, key = lambda x:x[1], reverse = True)     # sort the score to get top 10 more similiarty movies
 
-    print('Movies suggested for you : \n')
+    #print('Movies suggested for you : \n')
     st.write('''# Movies suggested for you 
     ## you may also like this movies ..''')
     i = 1
     
-    movie=[]
+    movies=[]
     # print the top 10 movies base on similiarity score 
   
     for movie in sorted_similar_movies:
         index = movie[0]
         title_from_index = recom_data[recom_data.index==index]['names'].values[0]
         if (i<10):
-            movie.append(title_from_index)
-            print(i, '.',title_from_index)
+            movies.append(title_from_index)
+            # print(i, '.',title_from_index)
             i+=1
-    st.write(movie)
+    st.write(movies)
 
 
     
