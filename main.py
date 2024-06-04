@@ -72,26 +72,29 @@ def recommendation(similarity,recom_data):
   
     for movie in sorted_similar_movies:
         index = movie[0]
-        title_from_index = recom_data[recom_data.index==index]['names'].values[0]
+        title_from_index = recom_data[recom_data.index==index]['names'].values[0] 1==
         if (i<10):
             movies.append(title_from_index)
             # print(i, '.',title_from_index)
             i+=1
+        if i==10:
+            break
     st.write(movies)
 
 
     
 
 def main():
-    print(random_names)
+   
     similarity = processing(combined_features)
     while True:
         
         call= recommendation(similarity,recom_data)
-        key=input("Are you continue....Y/N : ")
-        
-        if key in ['n','N','no','No','NO']:
+        val=st.text_input("Are you need to continue  yes/no")
+        if val in ['n','N','no','No','NO']:
             break
+        
+
         
 main()   
     
