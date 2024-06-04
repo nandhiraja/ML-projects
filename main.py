@@ -72,7 +72,7 @@ def recommendation(similarity,recom_data):
   
     for movie in sorted_similar_movies:
         index = movie[0]
-        title_from_index = recom_data[recom_data.index==index]['names'].values[0] 1==
+        title_from_index = recom_data[recom_data.index==index]['names'].values[0]
         if (i<10):
             movies.append(title_from_index)
             # print(i, '.',title_from_index)
