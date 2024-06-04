@@ -1,6 +1,6 @@
 numpy 
 pandas 
 streamlit
-difflib
+cdifflib
 scikit-learn
 random
