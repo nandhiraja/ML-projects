@@ -54,7 +54,9 @@ def recommendation(similarity,recom_data):
     
     #print(" similiar names  :  ",  find_close_match ,"\n\n")
     st.write(find_close_match)
-    
+    if find_close_match==[]:
+        st.write("No match found try another")
+        return
     close_match = find_close_match[0]             # we take first one which is given by cloest movie
 
     index_of_the_movie = recom_data[recom_data.names == close_match]['index'].values[0]   #  geting the index of the movie
