@@ -38,8 +38,8 @@ def recommendation(similarity,recom_data):
         # make the recommendation based on your movie which you like 
     # get input of the movie_name
     st.write(random_names)
-    movie name = st.text_input('Enter the movie name')
-    movie_name =input('Enter your favourite movie name : ')
+    movie_name = st.text_input('Enter the movie name')
+    #movie_name =input('Enter your favourite movie name : ')
 
     # here we define some default name  -----> otherwise you can get it from user 
 
