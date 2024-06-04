@@ -16,8 +16,8 @@ combined_features=combined_features["0"]
 
 random_names = random.sample(recom_data["names"].tolist(), 4)
 
-st.write('''## Welcome to movie recommendation system 
-### Here we use the Imdb movie dataset to build the  recommendation system''')
+st.write('''# Welcome to movie recommendation system 
+ ** Here we use the Imdb movie dataset to build the  recommendation system**''')
 user_value = st.selectbox('choose which type of movie you like ', ["Action","comedy","Horror","life style"])
 
 def processing(combined_features):
@@ -37,6 +37,7 @@ def processing(combined_features):
 def recommendation(similarity,recom_data):
         # make the recommendation based on your movie which you like 
     # get input of the movie_name
+    st.write(''' # SOME OF RANDOM MOVIE NAMES''')
     st.write(random_names)
     movie_name = "Iron man"
     movie_name = st.text_input('Enter the movie name')
@@ -63,14 +64,19 @@ def recommendation(similarity,recom_data):
     sorted_similar_movies = sorted(similarity_score, key = lambda x:x[1], reverse = True)     # sort the score to get top 10 more similiarty movies
 
     #print('Movies suggested for you : \n')
-    st.write('''# Movies suggested for you 
-    ## you may also like this movies ..''')
+    st.write('''
+    # Movies suggested for you 
+    you may also like this movies ..
+    ''')
     i = 1
     
     movies=[]
     # print the top 10 movies base on similiarity score 
   
     for movie in sorted_similar_movies:
+        if movie == []:
+            st.write('''NO such movies sorry.. try another''')
+            break
         index = movie[0]
         title_from_index = recom_data[recom_data.index==index]['names'].values[0]
         if (i<10):
