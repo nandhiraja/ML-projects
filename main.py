@@ -19,7 +19,7 @@ random_names = random.sample(recom_data["names"].tolist(), 4)
 # Display the title and description
 st.write('''# Welcome to movie recommendation system 
 **Here we use the IMDb movie dataset to build the recommendation system**
-### ___________________________________________________________                                                               **NandhiRaja**''')
+### _________________________________________                                                              **NandhiRaja**''')
 
 user_value = st.selectbox('Choose which type of movie you like', ["Action", "Comedy", "Horror", "Life Style"])
 
