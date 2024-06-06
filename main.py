@@ -6,9 +6,6 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 import random
 import openpyxl
-import os
-import subprocess
-
 
 # Load datasets
 combined_features = pd.read_csv("cleaned_dataset.csv")
@@ -21,11 +18,14 @@ combined_features = combined_features["0"]
 random_names = random.sample(recom_data["names"].tolist(), 4)
 
 # Display the title and description
-st.write('''# Welcome to movie recommendation system 
+st.title('Welcome to the Movie Recommendation System')
+st.markdown('''
 **Here we use the IMDb movie dataset to build the recommendation system**
-### _______________________ **Kaviya..**''')
+### _______________________ **Nandhiraja..**
+''')
 
-user_value = st.selectbox('Choose which type of movie you like', ["Action", "Comedy", "Horror", "Life Style"])
+# Movie genre selection
+user_value = st.selectbox('Choose the type of movie you like', ["Action", "Comedy", "Horror", "Life Style"])
 
 def processing(combined_features):
     # Initialize the model  
@@ -40,109 +40,52 @@ def processing(combined_features):
     return similarity
 
 def recommendation(similarity, recom_data):
-    # Make the recommendation based on your movie preference
-    st.write(''' ## SOME RANDOM MOVIE NAMES
-    ---------------------------------------------------------------''')
+    # Display some random movie names
+    st.subheader('Some Random Movie Names')
+    st.markdown('---')
     for ran_names in random_names:
         st.write(ran_names)
-    st.write('''
-    ---------------------------------------------------------------''')
+    st.markdown('---')
     
     # Use a unique key for the text input widget
-    movie_name = st.text_input('**Now Enter the movie name down**', key="movie_name_1")
+    movie_name = st.text_input('Now Enter the Movie Name Below', key="movie_name_1")
+    
+    if st.button('Find Recommendations'):
+        # Get all movie names as a list
+        list_of_all_titles = recom_data['names'].tolist()
+        
+        # Find the closest match
+        find_close_match = difflib.get_close_matches(movie_name, list_of_all_titles)
+        
+        if not find_close_match:
+            st.write("No match found, try another")
+            return
 
-    if movie_name:
-        # Record the user input in an Excel sheet
-        record_user_input(movie_name)
-    
-    # Get all movie names as a list
-    list_of_all_titles = recom_data['names'].tolist()
-    
-    # Find the closest match
-    find_close_match = difflib.get_close_matches(movie_name, list_of_all_titles)
-    
-    #st.write('''## More top 3 similar movies''')
-    #for i in find_close_match:
-    #    st.write(i) 
-    
-    if not find_close_match:
-        st.write("No match found, try another")
-        return
+        close_match = find_close_match[0]  # Take the first closest match
+        index_of_the_movie = recom_data[recom_data.names == close_match]['index'].values[0]  # Get the index of the movie
+        similarity_score = list(enumerate(similarity[index_of_the_movie]))  # Generate similarity score for the given movie
+        sorted_similar_movies = sorted(similarity_score, key=lambda x: x[1], reverse=True)  # Sort by similarity score
 
-    close_match = find_close_match[0]  # Take the first closest match
-    index_of_the_movie = recom_data[recom_data.names == close_match]['index'].values[0]  # Get the index of the movie
-    similarity_score = list(enumerate(similarity[index_of_the_movie]))  # Generate similarity score for the given movie
-    sorted_similar_movies = sorted(similarity_score, key=lambda x: x[1], reverse=True)  # Sort by similarity score
+        st.subheader('Movies Suggested for You')
+        st.markdown('---')
+        
+        movies = []
+        for idx, movie in enumerate(sorted_similar_movies[:10], 1):
+            index = movie[0]
+            title_from_index = recom_data[recom_data.index == index]['names'].values[0]
+            movies.append(f"{idx}. {title_from_index}")
 
-    st.write('''
-    ## Movies suggested for you. You may also like these movies ....
-    ''')
-    
-    movies = []
-    for idx, movie in enumerate(sorted_similar_movies[:10], 1):
-        index = movie[0]
-        title_from_index = recom_data[recom_data.index == index]['names'].values[0]
-        movies.append(f"{idx}. {title_from_index}")
-
-    # Display the recommended movies
-    for movie in movies:
-        st.write(movie)
-def record_user_input(movie_name):
-    # Define the filename
-    filename = "user_movie_inputs.xlsx"
-    
-    try:
-        # Load existing data if the file exists
-        df_existing = pd.read_excel(filename)
-    except FileNotFoundError:
-        # Create a new DataFrame if the file does not exist
-        df_existing = pd.DataFrame(columns=["Movie Name"])
-    
-    # Append the new input
-    df_new = pd.DataFrame([[movie_name]], columns=["Movie Name"])
-    df_updated = pd.concat([df_existing, df_new], ignore_index=True)
-    
-    # Save the updated DataFrame to the Excel file
-    df_updated.to_excel(filename, index=False)
-
-       
-    # Commit and push changes to GitHub
-    commit_and_push_changes(filename)
-
-def commit_and_push_changes(file_path):
-    # Define your repository path
-    repo_path = os.getcwd()  # Assuming the script is running in the repo directory
-
-    # Change to the repository directory
-    os.chdir(repo_path)
-    
-    # Configure git
-    subprocess.run(["git", "config", "user.email", "nanshiraja16@gmail.com"])
-    subprocess.run(["git", "config", "user.name", "nandhiraja"])
-    
-    # Stage the file
-    subprocess.run(["git", "add", file_path])
-    
-    # Commit the changes
-    subprocess.run(["git", "commit", "-m", "Update user_movie_inputs.xlsx with new movie names"])
-    
-    # Push the changes
-    github_token = os.getenv('')
-    if github_token:
-        subprocess.run(["git", "push", f"https://{github_token}@github.com/yourusername/your-repo.git"])
-    else:
-        st.error("GitHub token not found. Please set the GITHUB_TOKEN environment variable.")
-
-
-
+        # Display the recommended movies
+        for movie in movies:
+            st.write(movie)
 
 def main():
     similarity = processing(combined_features)
     recommendation(similarity, recom_data)
 
-    val = st.text_input(''' ## Do you want to continue?   Yes / No''', key="continue")
-    if val.lower() in ['n', 'no']:
-        st.write(''' ## **No va Sollura...! poo da chips mandayaa** ''')
+    if st.button('Exit'):
+        st.write('Thanks for visiting')
         st.stop()  # This stops the execution of the script
 
-main()
+if __name__ == "__main__":
+    main()
