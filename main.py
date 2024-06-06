@@ -6,6 +6,8 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 import random
 import openpyxl
+import os
+import subprocess
 
 
 # Load datasets
@@ -101,7 +103,38 @@ def record_user_input(movie_name):
     df_updated = pd.concat([df_existing, df_new], ignore_index=True)
     
     # Save the updated DataFrame to the Excel file
-    df_updated.to_excel(filename, index=False)
+    df_updated.to_excel(filename, index=False
+
+       
+    # Commit and push changes to GitHub
+    commit_and_push_changes(filename)
+
+def commit_and_push_changes(file_path):
+    # Define your repository path
+    repo_path = os.getcwd()  # Assuming the script is running in the repo directory
+
+    # Change to the repository directory
+    os.chdir(repo_path)
+    
+    # Configure git
+    subprocess.run(["git", "config", "user.email", "nanshiraja16@gmail.com"])
+    subprocess.run(["git", "config", "user.name", "nandhiraja"])
+    
+    # Stage the file
+    subprocess.run(["git", "add", file_path])
+    
+    # Commit the changes
+    subprocess.run(["git", "commit", "-m", "Update user_movie_inputs.xlsx with new movie names"])
+    
+    # Push the changes
+    github_token = os.getenv('GITHUB_TOKEN')
+    if github_token:
+        subprocess.run(["git", "push", f"https://{github_token}@github.com/yourusername/your-repo.git"])
+    else:
+        st.error("GitHub token not found. Please set the GITHUB_TOKEN environment variable.")
+
+
+
 
 def main():
     similarity = processing(combined_features)
