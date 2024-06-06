@@ -127,7 +127,7 @@ def commit_and_push_changes(file_path):
     subprocess.run(["git", "commit", "-m", "Update user_movie_inputs.xlsx with new movie names"])
     
     # Push the changes
-    github_token = os.getenv('GITHUB_TOKEN')
+    github_token = os.getenv('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')
     if github_token:
         subprocess.run(["git", "push", f"https://{github_token}@github.com/yourusername/your-repo.git"])
     else:
