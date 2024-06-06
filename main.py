@@ -18,7 +18,8 @@ random_names = random.sample(recom_data["names"].tolist(), 4)
 
 # Display the title and description
 st.write('''# Welcome to movie recommendation system 
-**Here we use the IMDb movie dataset to build the recommendation system**''')
+**Here we use the IMDb movie dataset to build the recommendation system**
+                                                                ## **Nandhiraja**''')
 
 user_value = st.selectbox('Choose which type of movie you like', ["Action", "Comedy", "Horror", "Life Style"])
 
@@ -85,6 +86,7 @@ def main():
 
     val = st.text_input(''' ## Do you want to continue?   Yes / No''', key="continue")
     if val.lower() in ['n', 'no']:
+        st.write(''' ## **vendati Poo da Koranguu** ''')
         st.stop()  # This stops the execution of the script
 
 main()
