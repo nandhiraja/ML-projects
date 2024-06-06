@@ -83,8 +83,8 @@ def main():
     similarity = processing(combined_features)
     recommendation(similarity, recom_data)
 
-    val = st.text_input(''' ## Do you want to continue?   Yes / No''', key="continue")
-    if val.lower() in ['n', 'no']:
-        st.stop()  # This stops the execution of the script
+   # val = st.text_input(''' ## Do you want to continue?   Yes / No''', key="continue")
+    #if val.lower() in ['n', 'no']:
+     #   st.stop()  # This stops the execution of the script
 
 main()
