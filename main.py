@@ -103,7 +103,7 @@ def record_user_input(movie_name):
     df_updated = pd.concat([df_existing, df_new], ignore_index=True)
     
     # Save the updated DataFrame to the Excel file
-    df_updated.to_excel(filename, index=False
+    df_updated.to_excel(filename, index=False)
 
        
     # Commit and push changes to GitHub
