@@ -46,6 +46,10 @@ def recommendation(similarity, recom_data):
     
     # Use a unique key for the text input widget
     movie_name = st.text_input('**Now Enter the movie name down**', key="movie_name_1")
+
+    if movie_name:
+        # Record the user input in an Excel sheet
+        record_user_input(movie_name)
     
     # Get all movie names as a list
     list_of_all_titles = recom_data['names'].tolist()
@@ -79,6 +83,23 @@ def recommendation(similarity, recom_data):
     # Display the recommended movies
     for movie in movies:
         st.write(movie)
+def record_user_input(movie_name):
+    # Define the filename
+    filename = "user_movie_inputs.xlsx"
+    
+    try:
+        # Load existing data if the file exists
+        df_existing = pd.read_excel(filename)
+    except FileNotFoundError:
+        # Create a new DataFrame if the file does not exist
+        df_existing = pd.DataFrame(columns=["Movie Name"])
+    
+    # Append the new input
+    df_new = pd.DataFrame([[movie_name]], columns=["Movie Name"])
+    df_updated = pd.concat([df_existing, df_new], ignore_index=True)
+    
+    # Save the updated DataFrame to the Excel file
+    df_updated.to_excel(filename, index=False)
 
 def main():
     similarity = processing(combined_features)
