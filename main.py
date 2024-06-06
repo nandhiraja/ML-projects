@@ -36,21 +36,25 @@ def processing(combined_features):
 
 def recommendation(similarity, recom_data):
     # Make the recommendation based on your movie preference
-    st.write(''' ## SOME RANDOM MOVIE NAMES''')
+    st.write(''' ## SOME RANDOM MOVIE NAMES
+    ---------------------------------------------------------------''')
     for ran_names in random_names:
         st.write(ran_names)
+    st.write('''
+    ---------------------------------------------------------------''')
     
     # Use a unique key for the text input widget
-    movie_name = st.text_input('Enter the movie name', key="movie_name_1")
+    movie_name = st.text_input('**Now Enter the movie name down**', key="movie_name_1")
     
     # Get all movie names as a list
     list_of_all_titles = recom_data['names'].tolist()
     
     # Find the closest match
     find_close_match = difflib.get_close_matches(movie_name, list_of_all_titles)
-    st.write('''## More top 3 similar movies''')
-    for i in find_close_match:
-        st.write(i) 
+    
+    #st.write('''## More top 3 similar movies''')
+    #for i in find_close_match:
+    #    st.write(i) 
     
     if not find_close_match:
         st.write("No match found, try another")
