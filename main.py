@@ -48,7 +48,7 @@ def recommendation(similarity, recom_data):
     
     # Find the closest match
     find_close_match = difflib.get_close_matches(movie_name, list_of_all_titles)
-    st.write('''# More top 3 similar movies''')
+    st.write('''## More top 3 similar movies''')
     for i in find_close_match:
         st.write(i) 
     
@@ -62,7 +62,7 @@ def recommendation(similarity, recom_data):
     sorted_similar_movies = sorted(similarity_score, key=lambda x: x[1], reverse=True)  # Sort by similarity score
 
     st.write('''
-    ## Movies suggested for you You may also like these movies:
+    ## Movies suggested for you. You may also like these movies ....
     ''')
     
     movies = []
@@ -79,7 +79,7 @@ def main():
     similarity = processing(combined_features)
     recommendation(similarity, recom_data)
 
-    val = st.text_input(" ## Do you want to continue?   Yes / No", key="continue")
+    val = st.text_input(''' ## Do you want to continue?   Yes / No''', key="continue")
     if val.lower() in ['n', 'no']:
         st.stop()  # This stops the execution of the script
 
