@@ -86,7 +86,7 @@ def main():
 
     val = st.text_input(''' ## Do you want to continue?   Yes / No''', key="continue")
     if val.lower() in ['n', 'no']:
-        st.write(''' ## **vendati Poo da Koranguu** ''')
+        st.write(''' ## **No va Sollura...! poo da chips mandayaa** ''')
         st.stop()  # This stops the execution of the script
 
 main()
