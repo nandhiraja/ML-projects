@@ -6,103 +6,71 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 import random
 
+combined_features = pd.read_csv("cleaned_dataset.csv")
+recom_data = pd.read_csv("recom_dataset.csv")
 
-
-combined_features=pd.read_csv("cleaned_dataset.csv")
-recom_data=pd.read_csv("recom_dataset.csv")
-
-combined_features=combined_features["0"]
-
+combined_features = combined_features["0"]
 
 random_names = random.sample(recom_data["names"].tolist(), 4)
 
 st.write('''# Welcome to movie recommendation system 
- ** Here we use the Imdb movie dataset to build the  recommendation system**''')
-user_value = st.selectbox('choose which type of movie you like ', ["Action","comedy","Horror","life style"])
+ ** Here we use the Imdb movie dataset to build the recommendation system**''')
+user_value = st.selectbox('choose which type of movie you like', ["Action", "Comedy", "Horror", "Life Style"])
 
 def processing(combined_features):
-    
-    # initialize the model  
+    # Initialize the model  
     vectorizer = TfidfVectorizer()
 
-    # fit the data into the  model
+    # Fit the data into the model
     feature_vectors = vectorizer.fit_transform(combined_features)
 
-    # getting the similarity scores using cosine similarity
+    # Getting the similarity scores using cosine similarity
     similarity = cosine_similarity(feature_vectors)
     
     return similarity
 
-
-def recommendation(similarity,recom_data):
-        # make the recommendation based on your movie which you like 
-    # get input of the movie_name
+def recommendation(similarity, recom_data):
+    # Make the recommendation based on your movie which you like 
+    # Get input of the movie_name
     st.write(''' # SOME OF RANDOM MOVIE NAMES''')
     st.write(random_names)
-    movie_name = "Iron man"
-    movie_name = st.text_input('Enter the movie name')
-    #movie_name =input('Enter your favourite movie name : ')
-
-    # here we define some default name  -----> otherwise you can get it from user 
-
-    #movie_name = "Iron man"
-    #print('Enter your favourite movie name : Iron man')
-
-    list_of_all_titles = recom_data['names'].tolist()       # get all movie name as list
-
-    find_close_match = difflib.get_close_matches(movie_name, list_of_all_titles)  # find closest match --list of movie-- form oru given movie
+    movie_name = st.text_input('Enter the movie name', key="movie_name")
     
-    #print(" similiar names  :  ",  find_close_match ,"\n\n")
+    list_of_all_titles = recom_data['names'].tolist()  # Get all movie names as list
+    find_close_match = difflib.get_close_matches(movie_name, list_of_all_titles)  # Find closest match
+
     st.write(find_close_match)
-    if find_close_match==[]:
-        st.write("No match found try another")
+    if not find_close_match:
+        st.write("No match found, try another")
         return
-    close_match = find_close_match[0]             # we take first one which is given by cloest movie
 
-    index_of_the_movie = recom_data[recom_data.names == close_match]['index'].values[0]   #  geting the index of the movie
+    close_match = find_close_match[0]  # Take the first closest match
+    index_of_the_movie = recom_data[recom_data.names == close_match]['index'].values[0]  # Get the index of the movie
+    similarity_score = list(enumerate(similarity[index_of_the_movie]))  # Generate similarity score for the given movie
+    sorted_similar_movies = sorted(similarity_score, key=lambda x: x[1], reverse=True)  # Sort by similarity score
 
-    similarity_score = list(enumerate(similarity[index_of_the_movie]))            # generate the similarity score for the given movie
-        
-    sorted_similar_movies = sorted(similarity_score, key = lambda x:x[1], reverse = True)     # sort the score to get top 10 more similiarty movies
-
-    #print('Movies suggested for you : \n')
     st.write('''
     # Movies suggested for you 
-    you may also like this movies ..
+    You may also like these movies:
     ''')
     i = 1
-    
-    movies=[]
-    # print the top 10 movies base on similiarity score 
-  
+    movies = []
     for movie in sorted_similar_movies:
-        if movie == []:
-            st.write('''NO such movies sorry.. try another''')
-            break
         index = movie[0]
-        title_from_index = recom_data[recom_data.index==index]['names'].values[0]
-        if (i<10):
+        title_from_index = recom_data[recom_data.index == index]['names'].values[0]
+        if i <= 10:
             movies.append(title_from_index)
-            # print(i, '.',title_from_index)
-            i+=1
-        if i==10:
-            break
-    st.write(movies)
+            i += 1
 
-
-    
+    for idx, movie in enumerate(movies, 1):
+        st.markdown(f"**{idx}. {movie}**")
 
 def main():
-   
     similarity = processing(combined_features)
     while True:
-        
-        call= recommendation(similarity,recom_data)
-        val=st.text_input("Are you need to continue  yes/no")
-        if val in ['n','N','no','No','NO']:
+        recommendation(similarity, recom_data)
+        val = st.text_input("Do you want to continue? yes/no", key="continue")
+        if val.lower() in ['n', 'no']:
             break
-        
 
-        
-main()   
-    
+main()
