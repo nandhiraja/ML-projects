@@ -6,16 +6,21 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
 import random
 
+# Load datasets
 combined_features = pd.read_csv("cleaned_dataset.csv")
 recom_data = pd.read_csv("recom_dataset.csv")
 
+# Extract the combined features column
 combined_features = combined_features["0"]
 
+# Randomly select some movie names to display
 random_names = random.sample(recom_data["names"].tolist(), 4)
 
+# Display the title and description
 st.write('''# Welcome to movie recommendation system 
- ** Here we use the Imdb movie dataset to build the recommendation system**''')
-user_value = st.selectbox('choose which type of movie you like', ["Action", "Comedy", "Horror", "Life Style"])
+** Here we use the IMDb movie dataset to build the recommendation system**''')
+
+user_value = st.selectbox('Choose which type of movie you like', ["Action", "Comedy", "Horror", "Life Style"])
 
 def processing(combined_features):
     # Initialize the model  
@@ -30,15 +35,19 @@ def processing(combined_features):
     return similarity
 
 def recommendation(similarity, recom_data):
-    # Make the recommendation based on your movie which you like 
-    # Get input of the movie_name
-    st.write(''' # SOME OF RANDOM MOVIE NAMES''')
+    # Make the recommendation based on your movie preference
+    st.write(''' # SOME RANDOM MOVIE NAMES''')
     st.write(random_names)
-    movie_name = st.text_input('Enter the movie name', key="movie_name")
     
-    list_of_all_titles = recom_data['names'].tolist()  # Get all movie names as list
-    find_close_match = difflib.get_close_matches(movie_name, list_of_all_titles)  # Find closest match
-
+    # Use a unique key for the text input widget
+    movie_name = st.text_input('Enter the movie name', key="movie_name_1")
+    
+    # Get all movie names as a list
+    list_of_all_titles = recom_data['names'].tolist()
+    
+    # Find the closest match
+    find_close_match = difflib.get_close_matches(movie_name, list_of_all_titles)
+    
     st.write(find_close_match)
     if not find_close_match:
         st.write("No match found, try another")
@@ -53,24 +62,23 @@ def recommendation(similarity, recom_data):
     # Movies suggested for you 
     You may also like these movies:
     ''')
-    i = 1
+    
     movies = []
-    for movie in sorted_similar_movies:
+    for idx, movie in enumerate(sorted_similar_movies[:10], 1):
         index = movie[0]
         title_from_index = recom_data[recom_data.index == index]['names'].values[0]
-        if i <= 10:
-            movies.append(title_from_index)
-            i += 1
+        movies.append(f"{idx}. {title_from_index}")
 
-    for idx, movie in enumerate(movies, 1):
-        st.markdown(f"**{idx}. {movie}**")
+    # Display the recommended movies
+    for movie in movies:
+        st.write(movie)
 
 def main():
     similarity = processing(combined_features)
-    while True:
-        recommendation(similarity, recom_data)
-        val = st.text_input("Do you want to continue? yes/no", key="continue")
-        if val.lower() in ['n', 'no']:
-            break
+    recommendation(similarity, recom_data)
+
+    val = st.text_input("Do you want to continue? yes/no", key="continue")
+    if val.lower() in ['n', 'no']:
+        st.stop()  # This stops the execution of the script
 
 main()
