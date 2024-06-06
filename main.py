@@ -18,7 +18,7 @@ random_names = random.sample(recom_data["names"].tolist(), 4)
 
 # Display the title and description
 st.write('''# Welcome to movie recommendation system 
-** Here we use the IMDb movie dataset to build the recommendation system**''')
+**Here we use the IMDb movie dataset to build the recommendation system**''')
 
 user_value = st.selectbox('Choose which type of movie you like', ["Action", "Comedy", "Horror", "Life Style"])
 
@@ -36,8 +36,9 @@ def processing(combined_features):
 
 def recommendation(similarity, recom_data):
     # Make the recommendation based on your movie preference
-    st.write(''' # SOME RANDOM MOVIE NAMES''')
-    st.write(random_names)
+    st.write(''' ## SOME RANDOM MOVIE NAMES''')
+    for ran_names in random_names:
+        st.write(ran_names)
     
     # Use a unique key for the text input widget
     movie_name = st.text_input('Enter the movie name', key="movie_name_1")
@@ -47,8 +48,10 @@ def recommendation(similarity, recom_data):
     
     # Find the closest match
     find_close_match = difflib.get_close_matches(movie_name, list_of_all_titles)
+    st.write('''# More top 3 similar movies''')
+    for i in find_close_match:
+        st.write(i) 
     
-    st.write(find_close_match)
     if not find_close_match:
         st.write("No match found, try another")
         return
@@ -59,8 +62,7 @@ def recommendation(similarity, recom_data):
     sorted_similar_movies = sorted(similarity_score, key=lambda x: x[1], reverse=True)  # Sort by similarity score
 
     st.write('''
-    # Movies suggested for you 
-    You may also like these movies:
+    ## Movies suggested for you You may also like these movies:
     ''')
     
     movies = []
@@ -77,7 +79,7 @@ def main():
     similarity = processing(combined_features)
     recommendation(similarity, recom_data)
 
-    val = st.text_input("Do you want to continue? yes/no", key="continue")
+    val = st.text_input(" ## Do you want to continue?   Yes / No", key="continue")
     if val.lower() in ['n', 'no']:
         st.stop()  # This stops the execution of the script
 
