@@ -9,7 +9,7 @@ import os
 
 
 # Load datasets
-@st.cache_data
+@st.cache_resource
 def load_data():
     try:
        script_dir = os.path.dirname(os.path.abspath(__file__))
@@ -27,7 +27,7 @@ def load_data():
         st.stop()
 
 # Process features and compute similarity
-@st.cache
+@st.cache_data
 def process_features(features):
     """Process the features using TF-IDF vectorizer and compute cosine similarity."""
     # Ensure features is a Series (a single column of text)
