@@ -1,0 +1,7 @@
+numpy 
+pandas 
+streamlit
+cdifflib
+scikit-learn
+openpyxl
+
