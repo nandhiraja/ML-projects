@@ -1,82 +1,111 @@
-import numpy as np 
+import numpy as np
 import pandas as pd
 import streamlit as st
-import difflib
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
-import random
-import openpyxl
+import difflib
+#import openpyxl
+import os
+
 
 # Load datasets
-combined_features = pd.read_csv("cleaned_dataset.csv")
-recom_data = pd.read_csv("recom_dataset.csv")
+@st.cache_data
+def load_data():
+    try:
+       script_dir = os.path.dirname(os.path.abspath(__file__))
 
-# Extract the combined features column
-combined_features = combined_features["0"]
+       cleaned_dataset = os.path.join(script_dir, "cleaned_dataset.csv")
+       combined_features = pd.read_csv(cleaned_dataset)
 
-# Randomly select some movie names to display
-random_names = random.sample(recom_data["names"].tolist(), 4)
 
-# Display the title and description
-st.title('Welcome to the Movie Recommendation System')
-st.markdown('''
-**Here we use the IMDb movie dataset to build the recommendation system**
-### _______________________ **Nandhiraja..**
-''')
+       recom_dataset = os.path.join(script_dir, "recom_dataset.csv")
+       recom_data = pd.read_csv(recom_dataset)
 
-# Movie genre selection
-user_value = st.selectbox('Choose the type of movie you like', ["Action", "Comedy", "Horror", "Life Style"])
+       return combined_features, recom_data
+    except FileNotFoundError:
+        st.error("Dataset files not found. Please ensure 'cleaned_dataset.csv' and 'recom_dataset.csv' are in the project folder.")
+        st.stop()
 
+# Process features and compute similarity
+@st.cache
 def process_features(features):
     """Process the features using TF-IDF vectorizer and compute cosine similarity."""
+    # Ensure features is a Series (a single column of text)
+    if isinstance(features, pd.DataFrame):
+        if "0" in features.columns:
+            features = features["0"]
+        else:
+            st.error("The expected column '0' is not found in the dataset.")
+            st.stop()
+
+    # Drop NaN values and remove empty strings
+    features = features.dropna()
+    features = features[features.str.strip() != ""]
+
+    # Check if features is empty after cleaning
+    if features.empty:
+        st.error("All documents are empty or contain only stop words.")
+        st.stop()
+
+    # Apply TF-IDF Vectorization
     vectorizer = TfidfVectorizer()
     feature_vectors = vectorizer.fit_transform(features)
     similarity = cosine_similarity(feature_vectors)
     return similarity
 
-def recommend_movies(similarity, data):
-    """Recommend movies based on user input."""
-    st.subheader('Some Random Movie Names')
-    st.markdown('---')
+# Recommend movies
+def recommend_movies(similarity, data, random_names):
+    st.sidebar.subheader('Random Movie Suggestions')
     for name in random_names:
-        st.write(name)
-    st.markdown('---')
+        st.sidebar.write(f"- {name}")
 
-    movie_name = st.text_input('Now Enter the Movie Name Below', key="movie_name_1")
+    st.markdown("### Enter a Movie Name to Get Recommendations:")
+    movie_name = st.text_input('Movie Name', key="movie_name")
 
     if st.button('Find Recommendations'):
         list_of_all_titles = data['names'].tolist()
-        find_close_match = difflib.get_close_matches(movie_name, list_of_all_titles)
+        close_matches = difflib.get_close_matches(movie_name, list_of_all_titles)
 
-        if not find_close_match:
-            st.write("No match found, try another")
+        if not close_matches:
+            st.error("No match found. Please try another movie.")
             return
 
-        close_match = find_close_match[0]
-        index_of_the_movie = data[data.names == close_match]['index'].values[0]
-        similarity_score = list(enumerate(similarity[index_of_the_movie]))
-        sorted_similar_movies = sorted(similarity_score, key=lambda x: x[1], reverse=True)
+        close_match = close_matches[0]
+        index = data[data.names == close_match]['index'].values[0]
+        similarity_scores = list(enumerate(similarity[index]))
+        sorted_movies = sorted(similarity_scores, key=lambda x: x[1], reverse=True)
 
-        st.subheader('Movies Suggested for You')
-        st.markdown('---')
+        st.markdown("### Recommended Movies:")
+        for idx, (movie_index, _) in enumerate(sorted_movies[:10], start=1):
+            movie_title = data[data.index == movie_index]['names'].values[0]
+            st.write(f"{idx}. {movie_title}")
 
-        movies = []
-        for idx, movie in enumerate(sorted_similar_movies[:10], 1):
-            index = movie[0]
-            title_from_index = data[data.index == index]['names'].values[0]
-            movies.append(f"{idx}. {title_from_index}")
-
-        for movie in movies:
-            st.write(movie)
-
+# Main function
 def main():
     """Main function to run the Streamlit app."""
-    similarity = process_features(combined_features)
-    recommend_movies(similarity, recom_data)
+    st.title("🎥 Movie Recommendation System")
+    st.markdown("**Using IMDb data to recommend movies tailored to your preferences.**")
 
-    if st.button('Exit'):
-        st.write('Thanks for visiting')
+    combined_features, recom_data = load_data()
+    
+    if combined_features.empty or recom_data.empty:
+        st.error("One of the datasets is empty. Please check the data files.")
         st.stop()
+
+    random_names = recom_data["names"].sample(4).tolist()
+
+    st.sidebar.title("Movie Recommendation System")
+    st.sidebar.markdown("Choose a genre or explore random suggestions.")
+
+    genres = ["Action", "Comedy", "Horror", "Lifestyle"]
+    selected_genre = st.sidebar.selectbox("Select a Genre", genres)
+
+    similarity = process_features(combined_features)
+    recommend_movies(similarity, recom_data, random_names)
+
+    st.sidebar.markdown("---")
+    st.sidebar.button("Exit", on_click=lambda: st.success("Thank you for visiting!"))
+
 
 if __name__ == "__main__":
     main()
