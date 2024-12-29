@@ -1,6 +1,12 @@
 # Movie Recommendation System 
 ### Check out the live demo here: [Movie Recommendation System](https://movie-recommendation-system-nr.streamlit.app/)
 
+### User Interface Preview
+![App Interface Preview1](https://github.com/user-attachments/assets/283087c5-ade4-4980-bd57-c28962f56f19)
+
+
+![App Interface Preview](https://github.com/user-attachments/assets/18a9d8c5-7d35-4e62-a8b3-661437994b97)
+
 
 This is a simple **Movie Recommendation System** built using Python. The application leverages the IMDb movie dataset to recommend movies based on user input and preferences.
 
@@ -44,10 +50,6 @@ This is a simple **Movie Recommendation System** built using Python. The applica
    - Enter a movie name to get personalized recommendations.
 
 3. Exit the app using the **Exit** button when done.
-
-## Example
-### User Interface Preview
-(Add screenshots of the app interface here)
 
 ### Output Example
 - **Input**: Movie name entered by the user.
