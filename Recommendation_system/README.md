@@ -1,4 +1,6 @@
-# Movie Recommendation System
+# Movie Recommendation System 
+### Check out the live demo here: [Movie Recommendation System](https://movie-recommendation-system-nr.streamlit.app/)
+
 
 This is a simple **Movie Recommendation System** built using Python. The application leverages the IMDb movie dataset to recommend movies based on user input and preferences.
 
